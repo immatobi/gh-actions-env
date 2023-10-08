@@ -1,0 +1,50 @@
+name: Deploy w/ ENV
+on:
+  push:
+    branches:
+      - 'master'
+      - 'staging'
+env:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout [download] code
+        uses: actions/checkout@v4
+      - name: Install NodeJs
+        uses: actions/setup-node@v3
+        with: 
+          node-version: 18
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm install --force
+      - name: Start Application
+        run: npm start && npx wait-on htpp://127.0.0.1:XYZ
+      - name: Run Unit Tests
+        run: npm test
+      - name: Output Information
+        run: echo "..."
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout [download] code
+        uses: actions/checkout@v4
+      - name: Install NodeJs
+        uses: actions/setup-node@v3
+        with: 
+          node-version: 18
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm install --force
+      - name: Deploy
+        run: echo "Deploying..."
