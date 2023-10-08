@@ -5,9 +5,14 @@ on:
       - 'master'
       - 'staging'
 env:
-
+  MONGODB_DB_NAME: gh-demo
 jobs:
   test:
+    env: 
+      MONGODB_CLUSTER_ADDRESS: nxt-cluster-4c4e7879.mongo.ondigitalocean.com
+      MONGODB_USERNAME: Immanuel
+      MONGODB_PASSWORD: g5E43t06Lk18f2Pb
+      PORT: 7123
     runs-on: ubuntu-latest
     steps:
       - name: Checkout [download] code
@@ -24,27 +29,16 @@ jobs:
       - name: Install dependencies
         run: npm install --force
       - name: Start Application
-        run: npm start && npx wait-on htpp://127.0.0.1:XYZ
+        run: npm start && npx wait-on htpp://127.0.0.1:$PORT
       - name: Run Unit Tests
         run: npm test
       - name: Output Information
-        run: echo "..."
+        run: echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
   deploy:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout [download] code
-        uses: actions/checkout@v4
-      - name: Install NodeJs
-        uses: actions/setup-node@v3
-        with: 
-          node-version: 18
-      - name: Cache Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: deps-npm-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
-        run: npm install --force
-      - name: Deploy
-        run: echo "Deploying..."
+      - name: Output Information
+        run: |
+        echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
+        echo "MONGODB_DB_NAME: ${{ env.MONGODB_DB_NAME }}"
